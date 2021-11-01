@@ -1,0 +1,8 @@
+[package]
+name = "cdr-encoding-size"
+version = "0.1.0"
+edition = "2018"
+authors = ["Juhana Helovuo <juhe@iki.fi>"]
+
+[dependencies]
+cdr-encoding-size-derive = { path="../cdr-encoding-size-derive" }
