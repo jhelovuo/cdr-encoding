@@ -5,4 +5,4 @@ edition = "2018"
 authors = ["Juhana Helovuo <juhe@iki.fi>"]
 
 [dependencies]
-cdr-encoding-size-derive = { path="../cdr-encoding-size-derive" }
+cdr-encoding-size-derive = { git="https://github.com/jhelovuo/cdr-encoding-size-derive.git" }
