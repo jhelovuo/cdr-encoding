@@ -1,8 +1,13 @@
 [package]
 name = "cdr-encoding-size"
-version = "0.1.0"
+version = "0.5.0"
 edition = "2018"
-authors = ["Juhana Helovuo <juhe@iki.fi>"]
+authors = ["Juhana Helovuo <juhana.helovuo@atostek.com>"]
+description = "Helper crate for RustDDS: Trait to compute CDR-serialized size of data"
+readme = "README.md"
+license = "Apache-2.0"
+homepage = "https://atostek.com/en/products/rustdds/"  
+repository = "https://github.com/jhelovuo/cdr-encoding-size"
 
 [dependencies]
-cdr-encoding-size-derive = { git="https://github.com/jhelovuo/cdr-encoding-size-derive.git" }
+cdr-encoding-size-derive = { version = "~0.5" }
