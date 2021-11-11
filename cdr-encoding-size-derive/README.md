@@ -1,0 +1,1 @@
+This is a derive macro crate for [https://github.com/jhelovuo/cdr-encoding-size] helper trait.
