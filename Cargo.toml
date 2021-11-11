@@ -9,5 +9,11 @@ license = "Apache-2.0"
 homepage = "https://atostek.com/en/products/rustdds/"  
 repository = "https://github.com/jhelovuo/cdr-encoding-size"
 
+[workspace]
+members = [
+    ".",
+    "cdr-encoding-size-derive",
+]
+
 [dependencies]
-cdr-encoding-size-derive = { version = "~0.5" }
+cdr-encoding-size-derive = { path = "cdr-encoding-size-derive" }
