@@ -41,6 +41,8 @@ impl Mul<usize> for CdrEncodingMaxSize {
 // -------------------------------------------
 // -------------------------------------------
 
+/// Trait used to statically gauge the size of serialized instance keys.
+/// This is necessary to transmit instance keys. (RTPS spec v2.5, Section "9.6.4.8 KeyHash", Step 5.2)
 pub trait CdrEncodingSize
 {
   fn cdr_encoding_max_size() -> CdrEncodingMaxSize;

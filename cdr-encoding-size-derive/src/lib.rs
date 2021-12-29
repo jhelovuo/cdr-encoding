@@ -8,6 +8,7 @@ use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericPara
 // * This works on maximum size of data types, whereas the original example counts data item sizes.
 // * different naming
 
+/// Derive macro for implementing CdrEncodingSize trait.
 #[proc_macro_derive(CdrEncodingSize)]
 pub fn derive_cdr_encoding_size(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     // Parse the input tokens into a syntax tree.
