@@ -32,10 +32,10 @@
 
 use std::{io, io::Write, marker::PhantomData};
 
-use serde::{ser, Serialize};
-use byteorder::{ByteOrder, WriteBytesExt};
 #[cfg(test)]
 use byteorder::{BigEndian, LittleEndian};
+use byteorder::{ByteOrder, WriteBytesExt};
+use serde::{ser, Serialize};
 
 pub use super::error::{Error, Result};
 

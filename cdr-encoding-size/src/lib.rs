@@ -1,30 +1,29 @@
-use core::ops::Mul;
-use core::ops::Add;
+use core::ops::{Add, Mul};
 
 pub use cdr_encoding_size_derive::*;
 
 /// This type is used to count maximum size of a Key when serialized
 /// according to CDR but without field alignment.
-/// The purpose is to find out if the (key) type always fits into 16 bytes or not.
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd,)]
+/// The purpose is to find out if the (key) type always fits into 16 bytes or
+/// not.
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum CdrEncodingMaxSize {
   Bytes(usize),
   Unbounded,
 }
 
 impl Add for CdrEncodingMaxSize {
-    type Output = Self;
+  type Output = Self;
 
-    fn add(self, other: Self) -> Self::Output {
-      use CdrEncodingMaxSize::*;
-      match (self,other) {
-        (Bytes(s),Bytes(o)) => Bytes(s+o),
-        (Unbounded,_) => Unbounded,
-        (_,Unbounded) => Unbounded,
-      }
+  fn add(self, other: Self) -> Self::Output {
+    use CdrEncodingMaxSize::*;
+    match (self, other) {
+      (Bytes(s), Bytes(o)) => Bytes(s + o),
+      (Unbounded, _) => Unbounded,
+      (_, Unbounded) => Unbounded,
     }
+  }
 }
-
 
 impl Mul<usize> for CdrEncodingMaxSize {
   type Output = Self;
@@ -33,7 +32,7 @@ impl Mul<usize> for CdrEncodingMaxSize {
     use CdrEncodingMaxSize::*;
     match self {
       Unbounded => Unbounded,
-      Bytes(b) => Bytes(b*rhs),
+      Bytes(b) => Bytes(b * rhs),
     }
   }
 }
@@ -43,27 +42,28 @@ impl Mul<usize> for CdrEncodingMaxSize {
 
 /// Trait used to statically gauge the size of serialized instance keys.
 ///
-/// This is necessary to transmit instance keys. (RTPS spec v2.5, Section "9.6.4.8 KeyHash", Step 5.2)
-pub trait CdrEncodingSize
-{
+/// This is necessary to transmit instance keys. (RTPS spec v2.5, Section
+/// "9.6.4.8 KeyHash", Step 5.2)
+pub trait CdrEncodingSize {
   fn cdr_encoding_max_size() -> CdrEncodingMaxSize;
-}  
+}
 
 // -------------------------------------------
 // -------------------------------------------
-
 
 impl CdrEncodingSize for () {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Bytes(0) }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    CdrEncodingMaxSize::Bytes(0)
+  }
 }
 
 macro_rules! prim_cdr_encoding_size {
   ($t:ty) => {
     impl CdrEncodingSize for $t {
       #[inline]
-      fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-      { CdrEncodingMaxSize::Bytes( std::mem::size_of::<$t>() ) }
+      fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+        CdrEncodingMaxSize::Bytes(std::mem::size_of::<$t>())
+      }
     }
   };
 }
@@ -81,32 +81,35 @@ prim_cdr_encoding_size!(i64);
 prim_cdr_encoding_size!(i128);
 
 prim_cdr_encoding_size!(char);
-//prim_cdr_encoding_size!(usize); // size is platform-dependent, do not use in serializable data
-//prim_cdr_encoding_size!(isize);
+//prim_cdr_encoding_size!(usize); // size is platform-dependent, do not use in
+// serializable data prim_cdr_encoding_size!(isize);
 
 impl CdrEncodingSize for bool {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Bytes(1) }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    CdrEncodingMaxSize::Bytes(1)
+  }
 }
 
-
 impl<T: CdrEncodingSize> CdrEncodingSize for Vec<T> {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Unbounded }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    CdrEncodingMaxSize::Unbounded
+  }
 }
 
 impl CdrEncodingSize for String {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Unbounded }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    CdrEncodingMaxSize::Unbounded
+  }
 }
 
 impl<T: CdrEncodingSize> CdrEncodingSize for Box<T> {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { T::cdr_encoding_max_size() }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    T::cdr_encoding_max_size()
+  }
 }
 
 impl<T: CdrEncodingSize, const N: usize> CdrEncodingSize for [T; N] {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { T::cdr_encoding_max_size() * N }
+  fn cdr_encoding_max_size() -> CdrEncodingMaxSize {
+    T::cdr_encoding_max_size() * N
+  }
 }
-

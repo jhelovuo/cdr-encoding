@@ -1,16 +1,16 @@
 use std::marker::PhantomData;
 
+#[cfg(test)]
+use byteorder::{BigEndian, LittleEndian};
+use byteorder::{ByteOrder, ReadBytesExt};
 #[allow(unused_imports)]
 use log::{debug, error, info, trace, warn};
-use byteorder::{ByteOrder, ReadBytesExt};
+use paste::paste;
+#[cfg(test)]
+use serde::de::DeserializeOwned;
 use serde::de::{
   self, DeserializeSeed, EnumAccess, IntoDeserializer, MapAccess, SeqAccess, VariantAccess, Visitor,
 };
-#[cfg(test)]
-use serde::de::DeserializeOwned;
-#[cfg(test)]
-use byteorder::{BigEndian, LittleEndian};
-use paste::paste;
 
 pub use super::error::{Error, Result};
 
@@ -535,8 +535,8 @@ mod tests {
   use byteorder::{BigEndian, LittleEndian};
   use log::info;
   use serde::{Deserialize, Serialize};
-  use test_case::test_case;
   use serde_repr::{Deserialize_repr, Serialize_repr};
+  use test_case::test_case;
 
   use crate::{
     cdr_deserializer::{deserialize_from_big_endian, deserialize_from_little_endian},

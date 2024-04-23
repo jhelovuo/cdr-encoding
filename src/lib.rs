@@ -1,5 +1,5 @@
 //! OMG Common Data Representation (CDR) serialization with Serde
-//! See [Wikipedia](https://en.wikipedia.org/wiki/Common_Data_Representation) or 
+//! See [Wikipedia](https://en.wikipedia.org/wiki/Common_Data_Representation) or
 //! [specification in Section "9.3 CDR Transfer Syntax"](https://www.omg.org/spec/CORBA/3.4/Interoperability/PDF).
 //!
 //! [Full XTYPES specification](https://www.omg.org/spec/DDS-XTypes/1.2/PDF), which covers a lot more.
@@ -37,12 +37,10 @@
 //!  let serialized = to_vec::<ShapeType, LittleEndian>(&message).unwrap();
 //!  assert_eq!(serialized, expected_serialized_result);
 //!
-//!  let (deserialized_message, _consumed_byte_count) 
+//!  let (deserialized_message, _consumed_byte_count)
 //!    = from_bytes::<ShapeType, LittleEndian>(&serialized).unwrap();
 //!  assert_eq!(deserialized_message, message);
 //! ```
-
-
 
 mod cdr_deserializer;
 mod cdr_serializer;
