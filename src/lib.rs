@@ -1,112 +1,53 @@
-use core::ops::Mul;
-use core::ops::Add;
-
-pub use cdr_encoding_size_derive::*;
-
-/// This type is used to count maximum size of a Key when serialized
-/// according to CDR but without field alignment.
-/// The purpose is to find out if the (key) type always fits into 16 bytes or not.
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd,)]
-pub enum CdrEncodingMaxSize {
-  Bytes(usize),
-  Unbounded,
-}
-
-impl Add for CdrEncodingMaxSize {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self::Output {
-      use CdrEncodingMaxSize::*;
-      match (self,other) {
-        (Bytes(s),Bytes(o)) => Bytes(s+o),
-        (Unbounded,_) => Unbounded,
-        (_,Unbounded) => Unbounded,
-      }
-    }
-}
-
-
-impl Mul<usize> for CdrEncodingMaxSize {
-  type Output = Self;
-
-  fn mul(self, rhs: usize) -> Self::Output {
-    use CdrEncodingMaxSize::*;
-    match self {
-      Unbounded => Unbounded,
-      Bytes(b) => Bytes(b*rhs),
-    }
-  }
-}
-
-// -------------------------------------------
-// -------------------------------------------
-
-/// Trait used to statically gauge the size of serialized instance keys.
-///
-/// This is necessary to transmit instance keys. (RTPS spec v2.5, Section "9.6.4.8 KeyHash", Step 5.2)
-pub trait CdrEncodingSize
-{
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize;
-}  
-
-// -------------------------------------------
-// -------------------------------------------
+//! OMG Common Data Representation (CDR) serialization with Serde
+//! See [Wikipedia](https://en.wikipedia.org/wiki/Common_Data_Representation) or 
+//! [specification in Section "9.3 CDR Transfer Syntax"](https://www.omg.org/spec/CORBA/3.4/Interoperability/PDF).
+//!
+//! [Full XTYPES specification](https://www.omg.org/spec/DDS-XTypes/1.2/PDF), which covers a lot more.
+//! This implemention is only for "plain" CDR.
+//!
+//! # Example
+//!
+//! ```
+//!  use cdr_encoding::*;
+//!  use serde::{Serialize, Deserialize};
+//!  use byteorder::LittleEndian;
+//!
+//!  // This example is originally from https://www.omg.org/spec/DDSI-RTPS/2.3/PDF
+//!  // 10.7 Example for User-defined Topic Data
+//!  #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+//!  struct ShapeType {
+//!    color: String,
+//!    x: i32,
+//!    y: i32,
+//!    size: i32,
+//!  }
+//!
+//!  let message = ShapeType {
+//!    color: "BLUE".to_string(),
+//!    x: 34,
+//!    y: 100,
+//!    size: 24,
+//!  };
+//!
+//!  let expected_serialized_result: Vec<u8> = vec![
+//!    0x05, 0x00, 0x00, 0x00, 0x42, 0x4c, 0x55, 0x45, 0x00, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00,
+//!    0x00, 0x64, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00,
+//!  ];
+//!
+//!  let serialized = to_vec::<ShapeType, LittleEndian>(&message).unwrap();
+//!  assert_eq!(serialized, expected_serialized_result);
+//!
+//!  let (deserialized_message, _consumed_byte_count) 
+//!    = from_bytes::<ShapeType, LittleEndian>(&serialized).unwrap();
+//!  assert_eq!(deserialized_message, message);
+//! ```
 
 
-impl CdrEncodingSize for () {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Bytes(0) }
-}
 
-macro_rules! prim_cdr_encoding_size {
-  ($t:ty) => {
-    impl CdrEncodingSize for $t {
-      #[inline]
-      fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-      { CdrEncodingMaxSize::Bytes( std::mem::size_of::<$t>() ) }
-    }
-  };
-}
+mod cdr_deserializer;
+mod cdr_serializer;
+mod error;
 
-prim_cdr_encoding_size!(u8);
-prim_cdr_encoding_size!(u16);
-prim_cdr_encoding_size!(u32);
-prim_cdr_encoding_size!(u64);
-prim_cdr_encoding_size!(u128);
-
-prim_cdr_encoding_size!(i8);
-prim_cdr_encoding_size!(i16);
-prim_cdr_encoding_size!(i32);
-prim_cdr_encoding_size!(i64);
-prim_cdr_encoding_size!(i128);
-
-prim_cdr_encoding_size!(char);
-//prim_cdr_encoding_size!(usize); // size is platform-dependent, do not use in serializable data
-//prim_cdr_encoding_size!(isize);
-
-impl CdrEncodingSize for bool {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Bytes(1) }
-}
-
-
-impl<T: CdrEncodingSize> CdrEncodingSize for Vec<T> {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Unbounded }
-}
-
-impl CdrEncodingSize for String {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { CdrEncodingMaxSize::Unbounded }
-}
-
-impl<T: CdrEncodingSize> CdrEncodingSize for Box<T> {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { T::cdr_encoding_max_size() }
-}
-
-impl<T: CdrEncodingSize, const N: usize> CdrEncodingSize for [T; N] {
-  fn cdr_encoding_max_size() -> CdrEncodingMaxSize
-  { T::cdr_encoding_max_size() * N }
-}
-
+pub use cdr_deserializer::{from_bytes, CdrDeserializer};
+pub use cdr_serializer::{to_vec, to_vec_with_size_hint, to_writer, CdrSerializer};
+pub use error::{Error, Result};
