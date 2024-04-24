@@ -1,6 +1,6 @@
 [package]
 name = "cdr-encoding"
-version = "0.10.0"
+version = "0.10.1"
 edition = "2018"
 authors = ["Juhana Helovuo <juhana.helovuo@atostek.com>"]
 description = "Serde implementation of OMG Common Data Representation (CDR) encoding"

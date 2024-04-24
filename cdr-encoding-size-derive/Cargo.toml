@@ -1,9 +1,12 @@
 [package]
 name = "cdr-encoding-size-derive"
-version = "0.1.1"
+version = "0.5.1"
 edition = "2018"
 authors = ["Juhana Helovuo <juhe@iki.fi>"]
 repository = "https://github.com/jhelovuo/cdr-encoding"
+description = "Helper crate for RustDDS: Trait to compute the maximum CDR-serialized size of data (derive macro)"
+readme = "README.md"
+license = "Apache-2.0"
 
 [lib]
 proc-macro = true
