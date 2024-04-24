@@ -1,8 +1,9 @@
 [package]
 name = "cdr-encoding-size-derive"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 authors = ["Juhana Helovuo <juhe@iki.fi>"]
+repository = "https://github.com/jhelovuo/cdr-encoding"
 
 [lib]
 proc-macro = true

@@ -18,6 +18,15 @@ members = [
     "cdr-encoding-size-derive",
 ]
 
+
+# Although cdr-encoding, cdr-encoding-size, and cdr-encoding-size-derive 
+# are relaed semantically,
+# the main crate cdr-encoding does not technically depend on the two others.
+#
+# Naturally, cdr-encoding-size does depend on cdr-encoding-size-derive.
+#
+# These are intended for use in the RustDDS crate, which does depend on all of them.
+
 [dependencies]
 log = "0.4.11"
 serde = { version = "1.0", features = ["derive"] }
