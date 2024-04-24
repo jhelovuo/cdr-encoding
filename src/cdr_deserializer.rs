@@ -37,6 +37,11 @@ where
     }
   }
 
+  /// How many bytes of input stream have been consumed
+  pub fn bytes_consumed(&self) -> usize {
+    self.serialized_data_count
+  }
+
   /// Read the first bytes in the input.
   fn next_bytes(&mut self, count: usize) -> Result<&[u8]> {
     if count <= self.input.len() {
