@@ -9,4 +9,4 @@ license = "Apache-2.0"
 repository = "https://github.com/jhelovuo/cdr-encoding"
 
 [dependencies]
-cdr-encoding-size-derive = { path = "../cdr-encoding-size-derive" }
+cdr-encoding-size-derive = { version = "0.1.1", path = "../cdr-encoding-size-derive" }
