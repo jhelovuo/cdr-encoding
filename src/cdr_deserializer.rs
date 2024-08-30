@@ -397,6 +397,10 @@ where
   {
     self.deserialize_any(visitor)
   }
+
+  fn is_human_readable(&self) -> bool {
+      false
+  }
 }
 
 // ----------------------------------------------------------
