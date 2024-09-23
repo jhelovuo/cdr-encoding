@@ -464,6 +464,10 @@ where
     self.serialize_u32(variant_index)?;
     Ok(self)
   }
+
+  fn is_human_readable(&self) -> bool {
+      false
+  }
 }
 
 impl<'a, W: io::Write, BO: ByteOrder> ser::SerializeSeq for &'a mut CdrSerializer<W, BO> {
